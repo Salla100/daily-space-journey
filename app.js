@@ -47,6 +47,13 @@ function processState(raw) {
   return { state: raw, isFirstVisit: false, isNewDay };
 }
 
+function formatKM(km) {
+  if (km >= 1e9)  return (km / 1e9).toFixed(2) + 'B km';
+  if (km >= 1e6)  return (km / 1e6).toFixed(2) + 'M km';
+  if (km >= 1000) return Math.round(km).toLocaleString() + ' km';
+  return Math.round(km) + ' km';
+}
+
 function calcStreak(visitLog) {
   if (!visitLog || !visitLog.length) return 0;
   const sorted = [...visitLog].sort();
