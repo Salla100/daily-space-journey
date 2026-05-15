@@ -91,14 +91,14 @@ const ZONES = [
     icon: '🌙',
     color: '#c0c8d8',
     range: [0.003, 0.015],
-    description: 'The vast region between Earth and the Moon — a gravitational crossroads where Earth's pull gives way to the Moon's. The Apollo missions crossed it in three days.',
+    description: 'The vast region between Earth and the Moon — a gravitational crossroads where Earth\'s pull gives way to the Moon\'s. The Apollo missions crossed it in three days.',
     nasaQuery: 'Moon lunar far side Apollo cislunar',
     quote: { text: 'That\'s one small step for [a] man, one giant leap for mankind.', author: 'Neil Armstrong, lunar surface, July 20, 1969' },
     facts: [
       'The Moon is 384,400 km from Earth — your probe passes this milestone on Day 1.',
       'Apollo 11 took 3 days and 3 hours to travel from Earth to the Moon in 1969.',
       'The James Webb Space Telescope sits at the L2 point — 1.5 million km from Earth.',
-      'China's Chang'e 4 became the first spacecraft to land on the lunar far side in January 2019.'
+      'China\'s Chang\'e 4 became the first spacecraft to land on the lunar far side in January 2019.'
     ]
   },
   {
@@ -123,7 +123,7 @@ const ZONES = [
     icon: '☀️',
     color: '#f97316',
     range: [0.8, 1.6],
-    description: 'You've crossed 1 Astronomical Unit — the Earth–Sun distance that defines our cosmic ruler. The solar wind streams past at 400–800 km/s.',
+    description: 'You\'ve crossed 1 Astronomical Unit — the Earth–Sun distance that defines our cosmic ruler. The solar wind streams past at 400–800 km/s.',
     nasaQuery: 'Sun corona solar wind SOHO heliosphere',
     quote: { text: 'The Sun, with all those planets revolving around it, can still ripen a bunch of grapes as if it had nothing else in the universe to do.', author: 'Galileo Galilei' },
     facts: [
@@ -139,7 +139,7 @@ const ZONES = [
     icon: '🔴',
     color: '#ef4444',
     range: [1.6, 3.5],
-    description: 'The Red Planet's domain — a world where rovers rove, landers listen for marsquakes, and orbiters map ancient river valleys carved billions of years ago.',
+    description: 'The Red Planet\'s domain — a world where rovers rove, landers listen for marsquakes, and orbiters map ancient river valleys carved billions of years ago.',
     nasaQuery: 'Mars surface Perseverance Curiosity rover Jezero crater',
     quote: { text: 'The surface of the Earth is the shore of the cosmic ocean. From it we have learned most of what we know. Recently, we have waded a little out to sea — enough to dampen our toes.', author: 'Carl Sagan' },
     facts: [
@@ -155,7 +155,7 @@ const ZONES = [
     icon: '☄️',
     color: '#b45309',
     range: [3.5, 5.2],
-    description: 'A ring of rocky debris left over from the solar system's formation — surprisingly sparse. You could fly through it without seeing a single asteroid.',
+    description: 'A ring of rocky debris left over from the solar system\'s formation — surprisingly sparse. You could fly through it without seeing a single asteroid.',
     nasaQuery: 'asteroid belt Ceres Vesta Dawn spacecraft',
     quote: { text: 'In our obscurity — in all this vastness — there is no hint that help will come from elsewhere to save us from ourselves.', author: 'Carl Sagan, Pale Blue Dot' },
     facts: [
@@ -187,7 +187,7 @@ const ZONES = [
     icon: '💫',
     color: '#ca8a04',
     range: [8.5, 12.5],
-    description: 'The jewel of the solar system — Saturn's rings span 282,000 km yet are only 10–100 metres thick. Cassini spent 13 years mapping this magnificent system.',
+    description: 'The jewel of the solar system — Saturn\'s rings span 282,000 km yet are only 10–100 metres thick. Cassini spent 13 years mapping this magnificent system.',
     nasaQuery: 'Saturn rings Cassini Titan moon Enceladus',
     quote: { text: 'The rings of Saturn are among the most beautiful sights in the solar system; no photograph does them justice.', author: 'Carl Sagan' },
     facts: [
@@ -219,7 +219,7 @@ const ZONES = [
     icon: '❄️',
     color: '#7dd3fc',
     range: [32.0, 55.0],
-    description: 'The icy frontier — a vast ring of frozen worlds including Pluto, Eris, and Arrokoth, remnants from the solar system's birth 4.5 billion years ago.',
+    description: 'The icy frontier — a vast ring of frozen worlds including Pluto, Eris, and Arrokoth, remnants from the solar system\'s birth 4.5 billion years ago.',
     nasaQuery: 'Pluto New Horizons Kuiper belt heart Tombaugh Regio',
     quote: { text: 'Pluto is a complex and fascinating place with mountains of water ice and flowing plains of nitrogen ice. The solar system has surprised us once again.', author: 'Alan Stern, New Horizons Principal Investigator' },
     facts: [
