@@ -24,7 +24,7 @@ function saveState(s) {
 
 function createState() {
   const today = todayStr();
-  return { launchDate: today, lastVisit: today, totalDays: 1, distanceAU: DAILY_DISTANCE_AU, visitLog: [today], v: 1 };
+  return { launchDate: today, lastVisit: today, totalDays: 1, distanceAU: daysToAU(1), visitLog: [today], v: 2 };
 }
 
 function processState(raw) {
@@ -41,8 +41,8 @@ function processState(raw) {
     if (!raw.visitLog.includes(today)) raw.visitLog.push(today);
     isNewDay = true;
   }
-  // Always recompute from the current constant so pacing changes apply immediately
-  raw.distanceAU = raw.totalDays * DAILY_DISTANCE_AU;
+  // Always recompute from the curve so any pacing changes apply immediately
+  raw.distanceAU = daysToAU(raw.totalDays);
   saveState(raw);
   return { state: raw, isFirstVisit: false, isNewDay };
 }
@@ -350,7 +350,7 @@ function renderJourneyLog(state) {
 
 // ─── NEXT MILESTONE ──────────────────────────────────────────────────────────
 
-function renderNextMilestone(distanceAU) {
+function renderNextMilestone(distanceAU, totalDays) {
   const el = document.getElementById('next-milestone-content');
   if (!el) return;
   const next = getNextMilestone(distanceAU);
@@ -359,7 +359,7 @@ function renderNextMilestone(distanceAU) {
     return;
   }
   const remAU   = next.distanceAU - distanceAU;
-  const remDays = Math.ceil(remAU / DAILY_DISTANCE_AU);
+  const remDays = Math.max(1, Math.ceil(auToDays(next.distanceAU) - totalDays));
   const remKM   = formatKM(remAU * AU_TO_KM);
   el.innerHTML = `
     <div class="nm-planet"><span class="nm-emoji">${next.emoji}</span><span class="nm-name">${next.name}</span></div>
@@ -467,7 +467,7 @@ function renderStats(state, streak) {
   setText('stat-km',     formatKM(state.distanceAU * AU_TO_KM));
   const next = getNextMilestone(state.distanceAU);
   if (next) {
-    const days = Math.ceil((next.distanceAU - state.distanceAU) / DAILY_DISTANCE_AU);
+    const days = Math.max(1, Math.ceil(auToDays(next.distanceAU) - state.totalDays));
     setText('stat-next-days', days.toLocaleString());
     setText('stat-next-lbl',  'Days to ' + next.name);
   } else {
@@ -521,7 +521,8 @@ async function showNewDayOverlay(state) {
   const zone   = getZone(state.distanceAU);
   const nearby = getNearbyMilestone(state.distanceAU);
   const prev   = getZone((state.totalDays - 1) * DAILY_DISTANCE_AU);
-  const addedKM = formatKM(DAILY_DISTANCE_AU * AU_TO_KM);
+  const addedAU = daysToAU(state.totalDays) - daysToAU(state.totalDays - 1);
+  const addedKM = formatKM(addedAU * AU_TO_KM);
 
   // Text content
   setText('nd-title',    'DAY ' + state.totalDays);
@@ -622,7 +623,7 @@ async function init() {
   renderStats(state, streak);
   renderZone(zone);
   renderJourneyLog(state);
-  renderNextMilestone(state.distanceAU);
+  renderNextMilestone(state.distanceAU, state.totalDays);
 
   // Solar system map
   renderSolarSystemMap(state.distanceAU);

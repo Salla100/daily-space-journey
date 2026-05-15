@@ -1,8 +1,70 @@
 // milestones.js — Zone definitions and mission data for Daily Space Journey
 
-const DAILY_DISTANCE_AU = 39.5 / 365; // ~0.1082 AU/day — reaches Pluto in exactly 1 year
-const AU_TO_KM = 149597870.7;
-const MAX_SCALE_AU = 121.6;       // Heliopause — scale reference for progress bar
+const AU_TO_KM    = 149597870.7;
+const MAX_SCALE_AU = 121.6; // Heliopause — progress bar scale reference
+
+// ─── NON-LINEAR PACE CURVE ────────────────────────────────────────────────────
+// Each entry is [day, AU]. The probe moves slowly through the richly-documented
+// Earth neighbourhood and Mars, then accelerates through the outer solar system.
+//
+// Approximate zone timing:
+//   LEO (0–0.003 AU)      ≈ days  0–10  (Moon passed on day ~9)
+//   Cislunar (–0.01 AU)   ≈ days 10–25
+//   Inner solar (–1 AU)   ≈ days 25–70  (~2 months to Earth–Sun distance)
+//   Earth–Sun / pre-Mars  ≈ days 70–133
+//   Mars territory        ≈ days 133–200 (~2 months of rover/orbiter content)
+//   Asteroid Belt         ≈ days 200–255
+//   Jupiter               ≈ days 255–300
+//   Saturn                ≈ days 300–333
+//   Uranus / Neptune      ≈ days 333–358  (outer giants blur past)
+//   Pluto                 ≈ day  365      (exactly 1 year)
+//   Heliopause            ≈ day  510      (~17 months)
+
+const PACE_CURVE = [
+  [0,    0      ],
+  [10,   0.003  ],  // exit LEO
+  [25,   0.01   ],  // past Moon + L2
+  [70,   1.0    ],  // Earth–Sun distance
+  [130,  1.52   ],  // Mars orbital distance
+  [200,  3.5    ],  // asteroid belt centre
+  [255,  5.2    ],  // Jupiter
+  [300,  9.5    ],  // Saturn
+  [333,  19.2   ],  // Uranus
+  [353,  30.1   ],  // Neptune
+  [365,  39.5   ],  // Pluto — exactly 1 year
+  [510,  121.6  ],  // Heliopause
+];
+
+function daysToAU(days) {
+  if (days <= 0) return 0;
+  for (let i = 1; i < PACE_CURVE.length; i++) {
+    const [d0, au0] = PACE_CURVE[i - 1];
+    const [d1, au1] = PACE_CURVE[i];
+    if (days <= d1) {
+      const t = (days - d0) / (d1 - d0);
+      return au0 + t * (au1 - au0);
+    }
+  }
+  // Beyond last waypoint — extrapolate from final segment
+  const [d0, au0] = PACE_CURVE[PACE_CURVE.length - 2];
+  const [d1, au1] = PACE_CURVE[PACE_CURVE.length - 1];
+  return au1 + ((days - d1) / (d1 - d0)) * (au1 - au0);
+}
+
+function auToDays(targetAU) {
+  if (targetAU <= 0) return 0;
+  for (let i = 1; i < PACE_CURVE.length; i++) {
+    const [d0, au0] = PACE_CURVE[i - 1];
+    const [d1, au1] = PACE_CURVE[i];
+    if (targetAU <= au1) {
+      const t = (targetAU - au0) / (au1 - au0);
+      return d0 + t * (d1 - d0);
+    }
+  }
+  const [d0, au0] = PACE_CURVE[PACE_CURVE.length - 2];
+  const [d1, au1] = PACE_CURVE[PACE_CURVE.length - 1];
+  return d1 + ((targetAU - au1) / (au1 - au0)) * (d1 - d0);
+}
 
 // ─── ZONES ───────────────────────────────────────────────────────────────────
 
@@ -403,8 +465,9 @@ function getNextMilestone(distanceAU) {
 }
 
 function getNearbyMilestone(distanceAU) {
-  const band = DAILY_DISTANCE_AU * 3;
-  return MILESTONES.find(m => Math.abs(distanceAU - m.distanceAU) <= band) || null;
+  // "nearby" = within ±3 days of a milestone in curve-time
+  const currentDay = auToDays(distanceAU);
+  return MILESTONES.find(m => Math.abs(auToDays(m.distanceAU) - currentDay) <= 3) || null;
 }
 
 function getProgressPercent(distanceAU) {
