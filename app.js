@@ -498,6 +498,20 @@ function showLaunchScreen() {
   if (!screen) return Promise.resolve();
   screen.hidden = false;
   return new Promise(resolve => {
+    function dismiss() {
+      screen.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      screen.style.opacity    = '0';
+      screen.style.transform  = 'scale(1.04)';
+      setTimeout(() => {
+        screen.hidden = true;
+        screen.style.transition = screen.style.opacity = screen.style.transform = '';
+        resolve();
+      }, 520);
+    }
+
+    // Click anywhere to skip
+    screen.addEventListener('click', dismiss, { once: true });
+
     let n = 3;
     const numEl = document.getElementById('countdown-num');
     const barEl = document.getElementById('launch-bar');
@@ -507,18 +521,9 @@ function showLaunchScreen() {
       if (barEl) barEl.style.width = ((3 - n) / 3 * 100) + '%';
       if (n <= 0) {
         clearInterval(tick);
-        setTimeout(() => {
-          screen.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
-          screen.style.opacity    = '0';
-          screen.style.transform  = 'scale(1.04)';
-          setTimeout(() => {
-            screen.hidden = true;
-            screen.style.transition = screen.style.opacity = screen.style.transform = '';
-            resolve();
-          }, 720);
-        }, 900);
+        setTimeout(dismiss, 600);
       }
-    }, 820);
+    }, 700);
   });
 }
 
@@ -609,41 +614,47 @@ window.confirmReset = function () {
 // ─── INIT ────────────────────────────────────────────────────────────────────
 
 async function init() {
-  initStars();
+  const appEl = document.getElementById('app');
+  const lsEl  = document.getElementById('launch-screen');
 
-  const raw  = loadState();
-  const { state, isFirstVisit, isNewDay } = processState(raw);
-  const zone   = getZone(state.distanceAU);
-  const streak = calcStreak(state.visitLog);
+  try {
+    initStars();
 
-  if (isFirstVisit) {
-    await showLaunchScreen();
-  } else if (isNewDay) {
-    showNewDayOverlay(state); // non-blocking — app reveals immediately
-  }
+    const raw  = loadState();
+    const { state, isFirstVisit, isNewDay } = processState(raw);
+    const zone   = getZone(state.distanceAU);
+    const streak = calcStreak(state.visitLog);
 
-  // Reveal app
-  const app = document.getElementById('app');
-  if (app) app.hidden = false;
+    if (isFirstVisit) {
+      await showLaunchScreen();
+    } else if (isNewDay) {
+      showNewDayOverlay(state); // non-blocking — app reveals immediately
+    }
 
-  // Synchronous renders
-  renderHero(state, zone, streak);
-  renderProgressBar(state.distanceAU);
-  renderStats(state, streak);
-  renderZone(zone);
-  renderJourneyLog(state);
-  renderNextMilestone(state.distanceAU, state.totalDays);
+    if (appEl) appEl.hidden = false;
 
-  // Solar system map
-  renderSolarSystemMap(state.distanceAU);
-  window.addEventListener('resize', () => {
-    if (solarAnimFrame) { cancelAnimationFrame(solarAnimFrame); solarAnimFrame = null; }
+    renderHero(state, zone, streak);
+    renderProgressBar(state.distanceAU);
+    renderStats(state, streak);
+    renderZone(zone);
+    renderJourneyLog(state);
+    renderNextMilestone(state.distanceAU, state.totalDays);
+
     renderSolarSystemMap(state.distanceAU);
-  });
+    window.addEventListener('resize', () => {
+      if (solarAnimFrame) { cancelAnimationFrame(solarAnimFrame); solarAnimFrame = null; }
+      renderSolarSystemMap(state.distanceAU);
+    });
 
-  // Render immediately from local data; NASA images load in background
-  renderDiscovery(zone);
-  renderMission(zone, state.distanceAU);
+    renderDiscovery(zone);
+    renderMission(zone, state.distanceAU);
+
+  } catch (err) {
+    console.error('Daily Space Journey init error:', err);
+    // Always show the app — never leave user on a blank screen
+    if (lsEl) lsEl.hidden = true;
+    if (appEl) appEl.hidden = false;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

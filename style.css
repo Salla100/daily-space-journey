@@ -208,6 +208,15 @@ body {
   max-width: 360px;
 }
 
+.launch-tap {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  animation: scrollPulse 2.2s ease-in-out infinite;
+}
+
 /* New Day Screen */
 .nd-bg {
   position: absolute;
