@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Launch your personal spacecraft and travel deeper into space every day you return. A daily habit app with real NASA imagery.">
+  <meta name="theme-color" content="#0a0d14">
+  <meta property="og:title"       content="Daily Space Journey">
+  <meta property="og:description" content="Your probe travels further into space every day you visit. Real NASA images, real missions.">
+  <meta property="og:type"        content="website">
+  <title>Daily Space Journey · journey.svenamberg.com</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Twinkling star canvas background -->
+  <canvas id="stars" aria-hidden="true"></canvas>
+
+  <!-- ── LAUNCH SCREEN (first-visit animation) ─────────────────────────── -->
+  <div id="launch-screen" class="overlay-screen" hidden>
+    <div class="launch-inner">
+      <div class="earth-orb">🌍</div>
+      <h1 class="launch-title">DAILY SPACE JOURNEY</h1>
+      <p class="launch-sub">Initiating launch sequence for your spacecraft…</p>
+      <div class="countdown-ring">
+        <span id="countdown-num">3</span>
+      </div>
+      <div class="launch-bar-track">
+        <div class="launch-bar-fill" id="launch-bar"></div>
+      </div>
+      <p class="launch-note">
+        Your journey is personal to this browser. Return each day to advance further into space —
+        miss a day and your probe pauses, waiting for your return.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── NEW DAY OVERLAY (return-visit, new calendar day) ──────────────── -->
+  <div id="new-day-screen" class="overlay-screen" hidden>
+    <div class="new-day-inner">
+      <div class="probe-advance-anim">🛸</div>
+      <div class="new-day-label">NEW DAY LOGGED</div>
+      <h2 class="new-day-title" id="nd-title">DAY 2</h2>
+      <div class="new-day-dist"   id="nd-added">+600,000 km today</div>
+      <div class="new-day-total"  id="nd-total">0.008 AU from Earth</div>
+      <div class="new-day-zone"   id="nd-zone">Cislunar Space</div>
+      <button class="btn-primary" onclick="dismissNewDay()">CONTINUE MISSION →</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN APP ────────────────────────────────────────────────────────── -->
+  <div id="app" hidden>
+
+    <!-- Back to svenamberg.com -->
+    <nav class="site-nav">
+      <a href="https://svenamberg.com" class="home-link">← svenamberg.com</a>
+      <div class="nav-brand">🛸 Daily Space Journey</div>
+      <button class="btn-share" onclick="shareJourney()">Share</button>
+    </nav>
+
+    <!-- ── HERO ────────────────────────────────────────────────────────── -->
+    <section class="hero" id="hero">
+      <div class="probe-label">YOUR PROBE — DAY <span id="hero-day">1</span></div>
+      <div class="hero-distance">
+        <span id="hero-au">0.0040</span><span class="au-unit">AU</span>
+      </div>
+      <div class="hero-km" id="hero-km">598,391 km from Earth</div>
+      <div class="hero-zone-badge" id="hero-zone-badge">
+        <span id="hero-zone-icon">🛰️</span>
+        <span id="hero-zone-name">Low Earth Orbit</span>
+      </div>
+      <div class="hero-streak" id="hero-streak">
+        <span class="streak-icon">🔥</span>
+        <span id="hero-streak-num">1</span>
+        <span class="streak-label"> day streak</span>
+      </div>
+    </section>
+
+    <!-- ── JOURNEY PROGRESS BAR ───────────────────────────────────────── -->
+    <section class="progress-section">
+      <div class="progress-wrap">
+        <div class="progress-track-outer">
+          <div class="progress-fill" id="progress-fill"></div>
+          <div class="probe-pip" id="probe-pip">
+            <div class="probe-pip-icon">🛸</div>
+            <div class="probe-pip-glow"></div>
+          </div>
+          <!-- Milestone emoji pips injected by JS -->
+          <div id="milestone-pips"></div>
+        </div>
+        <div class="progress-ends">
+          <span>🌍 Earth</span>
+          <span>🌟 Heliopause (122 AU)</span>
+        </div>
+        <!-- Milestone name labels injected by JS -->
+        <div class="milestone-name-row" id="milestone-name-row"></div>
+      </div>
+    </section>
+
+    <!-- ── STATS ──────────────────────────────────────────────────────── -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-tile">
+          <span class="stat-val" id="stat-days">1</span>
+          <span class="stat-lbl">Days Travelled</span>
+        </div>
+        <div class="stat-tile highlight">
+          <span class="stat-val" id="stat-streak">1</span>
+          <span class="stat-lbl">🔥 Day Streak</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val" id="stat-km">599K km</span>
+          <span class="stat-lbl">Total Distance</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-val" id="stat-next-days">—</span>
+          <span class="stat-lbl" id="stat-next-lbl">Days to Next</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TODAY'S NASA DISCOVERY (APOD) ─────────────────────────────── -->
+    <section class="discovery-section">
+      <div class="section-header">
+        <h2 class="section-title">Today's NASA Discovery</h2>
+        <span class="section-sub" id="discovery-date"></span>
+      </div>
+      <!-- Content injected by JS -->
+      <div class="discovery-card" id="discovery-card">
+        <div class="card-loading">
+          <div class="spin-ring"></div>
+          <span>Receiving signal from NASA…</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CURRENT ZONE + MISSION HIGHLIGHT ──────────────────────────── -->
+    <section class="zone-mission-section">
+
+      <div class="zone-card card" id="zone-card">
+        <div class="card-header">
+          <span id="zone-card-icon">🛰️</span>
+          <h3 id="zone-card-title">LOW EARTH ORBIT</h3>
+        </div>
+        <p id="zone-card-desc">Loading region data…</p>
+        <div class="zone-fact-box" id="zone-fact-box"></div>
+      </div>
+
+      <div class="mission-card card" id="mission-card">
+        <div class="card-header">
+          <span>🚀</span>
+          <h3>Mission Highlight</h3>
+        </div>
+        <div id="mission-content">
+          <div class="card-loading">
+            <div class="spin-ring small"></div>
+            <span>Searching NASA archive…</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── JOURNEY LOG + NEXT MILESTONE ──────────────────────────────── -->
+    <section class="log-milestone-section">
+
+      <div class="journey-log-card card">
+        <h3 class="card-title">Journey Log — Last 14 Days</h3>
+        <!-- Day cells injected by JS -->
+        <div class="log-days" id="log-days"></div>
+        <div class="log-meta">
+          <span>Launch: <strong id="log-launch-date">—</strong></span>
+          <span>Total visits: <strong id="log-total">—</strong></span>
+        </div>
+      </div>
+
+      <div class="next-milestone-card card" id="next-milestone-card">
+        <h3 class="card-title">Next Milestone</h3>
+        <!-- Content injected by JS -->
+        <div id="next-milestone-content"></div>
+      </div>
+
+    </section>
+
+    <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
+    <footer class="site-footer">
+      <p>
+        <a href="https://svenamberg.com">svenamberg.com</a> ·
+        Imagery: <a href="https://apod.nasa.gov" target="_blank" rel="noopener">NASA APOD</a> &amp;
+        <a href="https://images.nasa.gov" target="_blank" rel="noopener">NASA Image Library</a>
+      </p>
+      <p class="footer-sub">
+        Journey data stored locally in your browser — no account, no tracking ·
+        <button class="link-btn" onclick="confirmReset()">Reset journey</button>
+      </p>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <script src="milestones.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
