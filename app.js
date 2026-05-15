@@ -513,37 +513,33 @@ function showLaunchScreen() {
 
 // ─── NEW DAY OVERLAY (rich version) ──────────────────────────────────────────
 
-async function showNewDayOverlay(state) {
+function showNewDayOverlay(state) {
   const screen = document.getElementById('new-day-screen');
   if (!screen) return;
   screen.hidden = false;
 
-  const zone   = getZone(state.distanceAU);
-  const nearby = getNearbyMilestone(state.distanceAU);
-  const prev   = getZone((state.totalDays - 1) * DAILY_DISTANCE_AU);
+  const zone    = getZone(state.distanceAU);
+  const nearby  = getNearbyMilestone(state.distanceAU);
+  const prevZone = getZone(daysToAU(state.totalDays - 1));
   const addedAU = daysToAU(state.totalDays) - daysToAU(state.totalDays - 1);
   const addedKM = formatKM(addedAU * AU_TO_KM);
 
-  // Text content
-  setText('nd-title',    'DAY ' + state.totalDays);
-  setText('nd-added',    '+' + addedKM + ' today');
-  setText('nd-total',    state.distanceAU.toFixed(4) + ' AU from Earth');
+  setText('nd-title',     'DAY ' + state.totalDays);
+  setText('nd-added',     '+' + addedKM + ' today');
+  setText('nd-total',     state.distanceAU.toFixed(4) + ' AU from Earth');
   setText('nd-zone-icon', zone.icon);
-  setText('nd-zone-name', zone.id !== prev.id ? 'Entering: ' + zone.name : zone.name);
+  setText('nd-zone-name', zone.id !== prevZone.id ? 'Entering: ' + zone.name : zone.name);
 
-  // Quote
   const quoteEl = document.getElementById('nd-quote');
   if (quoteEl && zone.quote) {
     quoteEl.innerHTML = `"${zone.quote.text}"<cite>— ${zone.quote.author}</cite>`;
   }
 
-  // Fact
   const factEl = document.getElementById('nd-fact');
   if (factEl) {
     factEl.textContent = zone.facts[Math.floor(Math.random() * zone.facts.length)];
   }
 
-  // Milestone alert
   const msEl = document.getElementById('nd-milestone');
   if (msEl) {
     if (nearby) {
@@ -554,14 +550,16 @@ async function showNewDayOverlay(state) {
     }
   }
 
-  // Async background image
+  // Load background image without blocking — fire and forget
   const bgEl = document.getElementById('nd-bg');
   if (bgEl) {
-    const img = await fetchNASAImage(zone.nasaQuery);
-    if (img && img.href) {
-      bgEl.style.backgroundImage = `url('${img.href}')`;
-    }
+    fetchNASAImage(zone.nasaQuery).then(img => {
+      if (img && img.href) bgEl.style.backgroundImage = `url('${img.href}')`;
+    }).catch(() => {});
   }
+
+  // Auto-dismiss after 7 seconds
+  setTimeout(() => dismissNewDay(), 7000);
 }
 
 window.dismissNewDay = function () {
@@ -610,7 +608,7 @@ async function init() {
   if (isFirstVisit) {
     await showLaunchScreen();
   } else if (isNewDay) {
-    await showNewDayOverlay(state);  // async — loads bg image before showing
+    showNewDayOverlay(state); // non-blocking — app reveals immediately
   }
 
   // Reveal app

@@ -186,6 +186,30 @@ body {
   animation: fadeInUp 0.5s ease both;
 }
 
+.nd-close-btn {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.4rem;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  z-index: 2;
+}
+.nd-close-btn:hover {
+  background: rgba(255,255,255,0.2);
+  color: var(--text-primary);
+}
+
 .probe-advance-anim {
   font-size: 3.5rem;
   animation: probeAdvance 1.5s ease-in-out infinite;
