@@ -387,11 +387,23 @@ function renderZone(zone) {
 
 // ─── DISCOVERY CARD (APOD) ───────────────────────────────────────────────────
 
-async function renderDiscovery(zone) {
+function renderDiscovery(zone) {
   const card = document.getElementById('discovery-card');
   if (!card) return;
-  const apod = await fetchAPOD();
-  if (apod) {
+
+  // Show local zone content immediately — no spinner, no wait
+  const fact = zone.facts[Math.floor(Math.random() * zone.facts.length)];
+  card.innerHTML = `
+    <div class="disc-fallback">
+      <span class="df-icon">${zone.icon}</span>
+      <h3>${zone.name}</h3>
+      <p>${zone.description}</p>
+      <blockquote>${fact}</blockquote>
+    </div>`;
+
+  // Try APOD in background — replace card if it loads
+  fetchAPOD().then(apod => {
+    if (!apod) return;
     const isImg = !apod.media_type || apod.media_type === 'image';
     const imgSrc = apod.hdurl || apod.url || '';
     const copy   = apod.copyright ? `<span class="disc-credit">© ${apod.copyright.trim()}</span>` : '';
@@ -408,40 +420,39 @@ async function renderDiscovery(zone) {
         </div>
       </div>
       <div class="disc-body"><p class="disc-expl">${expl}</p></div>`;
-  } else {
-    const fact = zone.facts[Math.floor(Math.random() * zone.facts.length)];
-    card.innerHTML = `
-      <div class="disc-fallback">
-        <span class="df-icon">📡</span>
-        <h3>NASA signal unavailable today</h3>
-        <p>Here's a fact about your current region — <strong>${zone.name}</strong>:</p>
-        <blockquote>${fact}</blockquote>
-      </div>`;
-  }
+  }).catch(() => {});
 }
 
 // ─── MISSION CARD ────────────────────────────────────────────────────────────
 
-async function renderMission(zone, distanceAU) {
+function renderMission(zone, distanceAU) {
   const el = document.getElementById('mission-content');
   if (!el) return;
   const nearby = getNearbyMilestone(distanceAU);
-  const query  = nearby ? nearby.mission.imageQuery : zone.nasaQuery;
-  el.innerHTML = `<div class="card-loading"><div class="spin-ring small"></div><span>Searching NASA archive…</span></div>`;
-  const img = await fetchNASAImage(query);
-  if (img) {
-    const msMeta = nearby
-      ? `<div class="ms-flyby"><span class="flyby-tag">FLYBY EVENT</span> <strong>${nearby.mission.name}</strong> · ${nearby.mission.agency}<br><span class="flyby-date">${nearby.mission.date} · ${nearby.mission.type}</span></div><p class="ms-desc">${nearby.mission.desc}</p>`
-      : `<p class="ms-desc">${img.desc || zone.description}</p>`;
-    el.innerHTML = `
-      <div class="ms-img-wrap"><img src="${img.href}" alt="${img.title}" class="ms-image" loading="lazy" onerror="this.closest('.ms-img-wrap').remove()"></div>
-      <div class="ms-info"><p class="ms-img-title">${img.title}</p>${msMeta}</div>`;
+  const target = nearby || getNextMilestone(distanceAU);
+
+  // Render local mission data immediately — all data already in milestones.js
+  if (target) {
+    const flybyTag = nearby ? `<span class="flyby-tag">FLYBY EVENT</span> ` : `<span class="flyby-tag">NEXT MISSION</span> `;
+    el.innerHTML = `<div class="ms-text-fallback">
+      <div class="ms-emoji-large">${target.emoji}</div>
+      <div class="ms-flyby">${flybyTag}<strong>${target.mission.name}</strong> · ${target.mission.agency}<br>
+      <span class="flyby-date">${target.mission.date} · ${target.mission.type}</span></div>
+      <p class="ms-desc">${target.mission.desc}</p>
+    </div>`;
   } else {
-    const target = nearby || getNextMilestone(distanceAU);
-    el.innerHTML = target
-      ? `<div class="ms-text-fallback"><div class="ms-emoji-large">${target.emoji}</div><strong>${target.mission.name}</strong> — ${target.mission.agency}<br><em>${target.mission.date}</em><p>${target.mission.desc}</p></div>`
-      : `<div class="ms-text-fallback"><p>${zone.facts[0]}</p></div>`;
+    el.innerHTML = `<div class="ms-text-fallback"><p>${zone.description}</p></div>`;
   }
+
+  // Try to prepend a NASA image in the background
+  const query = nearby ? nearby.mission.imageQuery : zone.nasaQuery;
+  fetchNASAImage(query).then(img => {
+    if (!img || !img.href) return;
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'ms-img-wrap';
+    imgWrap.innerHTML = `<img src="${img.href}" alt="${img.title}" class="ms-image" loading="lazy" onerror="this.closest('.ms-img-wrap').remove()">`;
+    el.prepend(imgWrap);
+  }).catch(() => {});
 }
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
@@ -630,8 +641,9 @@ async function init() {
     renderSolarSystemMap(state.distanceAU);
   });
 
-  // Async API renders
-  await Promise.all([renderDiscovery(zone), renderMission(zone, state.distanceAU)]);
+  // Render immediately from local data; NASA images load in background
+  renderDiscovery(zone);
+  renderMission(zone, state.distanceAU);
 }
 
 document.addEventListener('DOMContentLoaded', init);
