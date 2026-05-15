@@ -5,8 +5,6 @@ const AU_TO_KM = 149597870.7;
 const MAX_SCALE_AU = 121.6;       // Heliopause — scale reference for progress bar
 
 // ─── ZONES ───────────────────────────────────────────────────────────────────
-// Each zone covers a distance range [minAU, maxAU).
-// nasaQuery is used to fetch a representative NASA image for the Mission Highlight.
 
 const ZONES = [
   {
@@ -17,6 +15,7 @@ const ZONES = [
     range: [0, 0.003],
     description: 'Your probe launches into the realm of satellites and space stations — 200–2,000 km above Earth, where the thin upper atmosphere still drags on spacecraft.',
     nasaQuery: 'International Space Station earth orbit astronaut',
+    quote: { text: 'Looking outward to the blackness of space, speckled with the glory of a universe of lights, I saw majesty — but no welcome.', author: 'Yuri Gagarin, first human in space, April 12, 1961' },
     facts: [
       'The ISS orbits at 408 km altitude, completing a full orbit every 92 minutes.',
       'At this altitude you witness 16 sunrises and 16 sunsets every 24 hours.',
@@ -32,6 +31,7 @@ const ZONES = [
     range: [0.003, 0.015],
     description: 'The vast region between Earth and the Moon — a gravitational crossroads where Earth's pull gives way to the Moon's. The Apollo missions crossed it in three days.',
     nasaQuery: 'Moon lunar far side Apollo cislunar',
+    quote: { text: 'That\'s one small step for [a] man, one giant leap for mankind.', author: 'Neil Armstrong, lunar surface, July 20, 1969' },
     facts: [
       'The Moon is 384,400 km from Earth — your probe passes this milestone on Day 1.',
       'Apollo 11 took 3 days and 3 hours to travel from Earth to the Moon in 1969.',
@@ -47,11 +47,12 @@ const ZONES = [
     range: [0.015, 0.8],
     description: 'The hot inner region baked by intense solar radiation, where Venus and Mercury orbit. Parker Solar Probe dives closer to the Sun than any craft before it.',
     nasaQuery: 'Venus Mercury inner solar system BepiColombo Parker Solar Probe',
+    quote: { text: 'Somewhere, something incredible is waiting to be known.', author: 'Carl Sagan' },
     facts: [
       'Venus has a surface temperature of 465 °C — hotter than Mercury despite being further from the Sun.',
       'Parker Solar Probe holds the record for closest approach to the Sun: just 6.2 million km.',
       'BepiColombo, a joint ESA/JAXA mission, will enter Mercury orbit in 2025.',
-      'Mercury's day is longer than its year — it rotates more slowly than it orbits the Sun.'
+      'Mercury\'s day is longer than its year — it rotates more slowly than it orbits the Sun.'
     ]
   },
   {
@@ -62,6 +63,7 @@ const ZONES = [
     range: [0.8, 1.6],
     description: 'You've crossed 1 Astronomical Unit — the Earth–Sun distance that defines our cosmic ruler. The solar wind streams past at 400–800 km/s.',
     nasaQuery: 'Sun corona solar wind SOHO heliosphere',
+    quote: { text: 'The Sun, with all those planets revolving around it, can still ripen a bunch of grapes as if it had nothing else in the universe to do.', author: 'Galileo Galilei' },
     facts: [
       '1 AU = 149,597,870 km — the yardstick of our solar system.',
       'Light takes 8 minutes and 20 seconds to travel from the Sun to Earth.',
@@ -77,9 +79,10 @@ const ZONES = [
     range: [1.6, 3.5],
     description: 'The Red Planet's domain — a world where rovers rove, landers listen for marsquakes, and orbiters map ancient river valleys carved billions of years ago.',
     nasaQuery: 'Mars surface Perseverance Curiosity rover Jezero crater',
+    quote: { text: 'The surface of the Earth is the shore of the cosmic ocean. From it we have learned most of what we know. Recently, we have waded a little out to sea — enough to dampen our toes.', author: 'Carl Sagan' },
     facts: [
       'Olympus Mons on Mars is the tallest volcano in the solar system at 21.9 km.',
-      'A Martian day (sol) is 24 hours and 37 minutes — just slightly longer than Earth's.',
+      'A Martian day (sol) is 24 hours and 37 minutes — just slightly longer than Earth\'s.',
       'Perseverance has collected rock samples for a planned future return to Earth.',
       'Ingenuity helicopter made over 70 powered flights on Mars — the first on another planet.'
     ]
@@ -92,10 +95,11 @@ const ZONES = [
     range: [3.5, 5.2],
     description: 'A ring of rocky debris left over from the solar system's formation — surprisingly sparse. You could fly through it without seeing a single asteroid.',
     nasaQuery: 'asteroid belt Ceres Vesta Dawn spacecraft',
+    quote: { text: 'In our obscurity — in all this vastness — there is no hint that help will come from elsewhere to save us from ourselves.', author: 'Carl Sagan, Pale Blue Dot' },
     facts: [
       'Despite millions of asteroids, the belt is 99.9% empty space.',
       'Ceres contains roughly one-third of all the mass in the entire Asteroid Belt.',
-      'NASA's Dawn is the only spacecraft to have orbited two different extraterrestrial bodies.',
+      'NASA\'s Dawn is the only spacecraft to have orbited two different extraterrestrial bodies.',
       'Hayabusa2 returned samples from asteroid Ryugu in 2020 — they contained organic molecules.'
     ]
   },
@@ -107,11 +111,12 @@ const ZONES = [
     range: [5.2, 8.5],
     description: 'The king of planets — a gas giant so large that 1,300 Earths could fit inside it, with 95 moons and the most powerful magnetic field of any planet.',
     nasaQuery: 'Jupiter Juno great red spot Galilean moons Io Europa',
+    quote: { text: 'We have lingered too long on the shores of the cosmic ocean. We are ready at last to set sail for the stars.', author: 'Carl Sagan' },
     facts: [
-      'Jupiter's Great Red Spot is a storm that has raged for at least 350 years.',
+      'Jupiter\'s Great Red Spot is a storm that has raged for at least 350 years.',
       'Io has over 400 active volcanoes — the most geologically active body in the solar system.',
-      'Europa's subsurface ocean may contain twice as much water as all of Earth's oceans.',
-      'NASA's Juno has been orbiting Jupiter since 2016, revealing its turbulent interior.'
+      'Europa\'s subsurface ocean may contain twice as much water as all of Earth\'s oceans.',
+      'NASA\'s Juno has been orbiting Jupiter since 2016, revealing its turbulent interior.'
     ]
   },
   {
@@ -122,8 +127,9 @@ const ZONES = [
     range: [8.5, 12.5],
     description: 'The jewel of the solar system — Saturn's rings span 282,000 km yet are only 10–100 metres thick. Cassini spent 13 years mapping this magnificent system.',
     nasaQuery: 'Saturn rings Cassini Titan moon Enceladus',
+    quote: { text: 'The rings of Saturn are among the most beautiful sights in the solar system; no photograph does them justice.', author: 'Carl Sagan' },
     facts: [
-      'Saturn's rings are made mostly of ice and rock ranging from dust grains to house-sized boulders.',
+      'Saturn\'s rings are made mostly of ice and rock ranging from dust grains to house-sized boulders.',
       'Titan is the only moon in the solar system with a thick atmosphere and liquid lakes on its surface.',
       'Enceladus spouts jets of water vapour and ice — evidence of a liquid ocean beneath the ice shell.',
       'Saturn is the least dense planet — it would float on water if you had a large enough ocean.'
@@ -137,10 +143,11 @@ const ZONES = [
     range: [12.5, 32.0],
     description: 'Uranus and Neptune — the mysterious ice giants visited only once, by Voyager 2 in 1986 and 1989. Both harbour bizarre magnetic fields and extreme storms.',
     nasaQuery: 'Uranus Neptune ice giant Voyager 2 rings',
+    quote: { text: 'The cosmos is within us. We are made of star-stuff. We are a way for the universe to know itself.', author: 'Carl Sagan' },
     facts: [
       'Uranus rotates on its side — its axial tilt is 97.8°, likely from a massive ancient collision.',
-      'Neptune's winds reach 2,100 km/h — the fastest sustained winds in the solar system.',
-      'Triton, Neptune's largest moon, orbits backwards and will eventually be torn apart by tidal forces.',
+      'Neptune\'s winds reach 2,100 km/h — the fastest sustained winds in the solar system.',
+      'Triton, Neptune\'s largest moon, orbits backwards and will eventually be torn apart by tidal forces.',
       'Voyager 2 is the only spacecraft to have visited both Uranus and Neptune.'
     ]
   },
@@ -152,8 +159,9 @@ const ZONES = [
     range: [32.0, 55.0],
     description: 'The icy frontier — a vast ring of frozen worlds including Pluto, Eris, and Arrokoth, remnants from the solar system's birth 4.5 billion years ago.',
     nasaQuery: 'Pluto New Horizons Kuiper belt heart Tombaugh Regio',
+    quote: { text: 'Pluto is a complex and fascinating place with mountains of water ice and flowing plains of nitrogen ice. The solar system has surprised us once again.', author: 'Alan Stern, New Horizons Principal Investigator' },
     facts: [
-      'Pluto's heart-shaped nitrogen ice plain, Tombaugh Regio, stretches over 1,600 km across.',
+      'Pluto\'s heart-shaped nitrogen ice plain, Tombaugh Regio, stretches over 1,600 km across.',
       'New Horizons flew past Pluto in July 2015 after a 9.5-year, 4.8 billion km journey.',
       'Arrokoth is the most distant Solar System object ever explored up close by a spacecraft.',
       'The Kuiper Belt contains over 100,000 objects larger than 100 km in diameter.'
@@ -165,8 +173,9 @@ const ZONES = [
     icon: '🌟',
     color: '#818cf8',
     range: [55.0, 121.6],
-    description: 'The outer boundary of our Sun's influence — where the solar wind slows and piles up against the interstellar medium. Voyager 1 crossed here in 2012.',
+    description: 'The outer boundary of our Sun\'s influence — where the solar wind slows and piles up against the interstellar medium. Voyager 1 crossed here in 2012.',
     nasaQuery: 'Voyager 1 heliosphere termination shock outer solar system',
+    quote: { text: 'Voyager did things we never planned, went places we never thought we\'d go, and it is the gift that keeps on giving.', author: 'Edward Stone, Voyager Project Scientist' },
     facts: [
       'The heliosphere shields our solar system from most of the interstellar cosmic radiation.',
       'Voyager 1 crossed the termination shock at about 94 AU in 2004.',
@@ -180,8 +189,9 @@ const ZONES = [
     icon: '⭐',
     color: '#c084fc',
     range: [121.6, Infinity],
-    description: 'Beyond the solar system — only Voyager 1 and Voyager 2 have reached this realm, drifting among the stars carrying humanity's message to the cosmos.',
+    description: 'Beyond the solar system — only Voyager 1 and Voyager 2 have reached this realm, drifting among the stars carrying humanity\'s message to the cosmos.',
     nasaQuery: 'Voyager interstellar space pale blue dot Carl Sagan',
+    quote: { text: 'Look again at that dot. That\'s here. That\'s home. That\'s us. On it everyone you love, everyone you know, everyone you ever heard of lived out their lives.', author: 'Carl Sagan, Pale Blue Dot, 1994' },
     facts: [
       'Voyager 1 (launched 1977) is over 160 AU from Earth — the most distant human-made object.',
       'The Pale Blue Dot photograph was taken by Voyager 1 at 6 billion km from Earth in 1990.',
@@ -192,7 +202,6 @@ const ZONES = [
 ];
 
 // ─── MILESTONES ───────────────────────────────────────────────────────────────
-// Key landmarks with the real spacecraft mission that explored each region.
 
 const MILESTONES = [
   {
@@ -230,7 +239,7 @@ const MILESTONES = [
       agency: 'ESA / JAXA',
       date: 'October 15, 2020 (first flyby)',
       type: 'Flyby en route to Mercury',
-      desc: 'ESA and JAXA's joint Mercury mission performed six Venus flybys using the planet's gravity as a slingshot to slow down and reach Mercury.',
+      desc: 'ESA and JAXA\'s joint Mercury mission performed six Venus flybys using the planet\'s gravity as a slingshot to slow down and reach Mercury.',
       imageQuery: 'BepiColombo Venus flyby spacecraft ESA JAXA'
     }
   },
@@ -269,7 +278,7 @@ const MILESTONES = [
       agency: 'NASA',
       date: 'July 16, 2011 — Vesta arrival',
       type: 'Orbiter',
-      desc: 'NASA's Dawn is the only spacecraft to have orbited two separate extraterrestrial bodies — Vesta (2011–2012) and Ceres (2015–2018), the largest objects in the Asteroid Belt.',
+      desc: 'NASA\'s Dawn is the only spacecraft to have orbited two separate extraterrestrial bodies — Vesta (2011–2012) and Ceres (2015–2018), the largest objects in the Asteroid Belt.',
       imageQuery: 'Dawn spacecraft asteroid Vesta Ceres NASA'
     }
   },
@@ -282,7 +291,7 @@ const MILESTONES = [
       agency: 'NASA',
       date: 'March 6, 2015',
       type: 'Orbiter',
-      desc: 'Dawn entered orbit around Ceres — the largest object in the Asteroid Belt and only dwarf planet in the inner solar system — revealing mysterious bright spots in Occator Crater.',
+      desc: 'Dawn entered orbit around Ceres — the largest object in the Asteroid Belt — revealing mysterious bright spots in Occator Crater, later identified as salt deposits.',
       imageQuery: 'Ceres bright spots Occator crater Dawn spacecraft NASA'
     }
   },
@@ -308,7 +317,7 @@ const MILESTONES = [
       agency: 'NASA / ESA / ASI',
       date: 'July 1, 2004',
       type: 'Orbiter + Titan lander',
-      desc: 'Cassini orbited Saturn for 13 years, discovering water plumes on Enceladus and delivering the Huygens probe to Titan's surface. Its Grand Finale ended in a deliberate dive into Saturn in 2017.',
+      desc: 'Cassini orbited Saturn for 13 years, discovering water plumes on Enceladus and delivering the Huygens probe to Titan\'s surface. Its Grand Finale ended in a deliberate dive into Saturn in 2017.',
       imageQuery: 'Cassini Saturn rings Titan Enceladus plumes NASA ESA'
     }
   },
@@ -334,7 +343,7 @@ const MILESTONES = [
       agency: 'NASA',
       date: 'August 25, 1989',
       type: 'Flyby',
-      desc: 'Voyager 2 performed humanity's only flyby of Neptune, revealing the Great Dark Spot, winds of 2,100 km/h, and geysers on the moon Triton.',
+      desc: 'Voyager 2 performed humanity\'s only flyby of Neptune, revealing the Great Dark Spot, winds of 2,100 km/h, and geysers on the moon Triton.',
       imageQuery: 'Voyager 2 Neptune great dark spot Triton moon NASA'
     }
   },
@@ -366,6 +375,23 @@ const MILESTONES = [
   }
 ];
 
+// ─── SOLAR SYSTEM MAP DATA ────────────────────────────────────────────────────
+
+const SOLAR_PLANETS = [
+  { name: 'Mercury', au: 0.387, angleDeg: 220, color: '#aaaaaa', r: 2.5 },
+  { name: 'Venus',   au: 0.723, angleDeg: 148, color: '#e8c870', r: 4.5 },
+  { name: 'Earth',   au: 1.000, angleDeg: 258, color: '#4a9eff', r: 5.0 },
+  { name: 'Mars',    au: 1.524, angleDeg: 196, color: '#c04030', r: 3.5 },
+  { name: 'Jupiter', au: 5.203, angleDeg: 128, color: '#c8a060', r: 10  },
+  { name: 'Saturn',  au: 9.537, angleDeg: 265, color: '#d4b07a', r: 8   },
+  { name: 'Uranus',  au: 19.19, angleDeg: 42,  color: '#7de8e8', r: 6   },
+  { name: 'Neptune', au: 30.07, angleDeg: 208, color: '#3060f0', r: 5.5 },
+  { name: 'Pluto',   au: 39.48, angleDeg: 104, color: '#90a8b8', r: 2.5 },
+];
+
+// Probe travels in the upper-right direction (clear of all planet angles above)
+const PROBE_ANGLE_RAD = (315 * Math.PI) / 180; // upper-right in canvas coords
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
 function getZone(distanceAU) {
@@ -377,19 +403,17 @@ function getNextMilestone(distanceAU) {
 }
 
 function getNearbyMilestone(distanceAU) {
-  // "Nearby" = within ±3 days of travel distance
   const band = DAILY_DISTANCE_AU * 3;
   return MILESTONES.find(m => Math.abs(distanceAU - m.distanceAU) <= band) || null;
 }
 
 function getProgressPercent(distanceAU) {
-  // Square-root scale so inner solar system is visible but outer system readable
   return Math.min(Math.sqrt(Math.max(distanceAU, 0) / MAX_SCALE_AU) * 100, 100);
 }
 
 function formatKM(km) {
   if (km >= 1e9)  return (km / 1e9).toFixed(2)  + 'B km';
   if (km >= 1e6)  return (km / 1e6).toFixed(2)  + 'M km';
-  if (km >= 1e3)  return Math.round(km / 1e3)    + ',000 km';
+  if (km >= 1e3)  return Math.round(km / 1e3).toLocaleString() + ',000 km';
   return Math.round(km) + ' km';
 }

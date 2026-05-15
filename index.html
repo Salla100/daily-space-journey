@@ -40,13 +40,38 @@
 
   <!-- ── NEW DAY OVERLAY (return-visit, new calendar day) ──────────────── -->
   <div id="new-day-screen" class="overlay-screen" hidden>
+    <!-- Blurred NASA image background, set by JS -->
+    <div class="nd-bg" id="nd-bg"></div>
+    <!-- Content -->
     <div class="new-day-inner">
       <div class="probe-advance-anim">🛸</div>
       <div class="new-day-label">NEW DAY LOGGED</div>
       <h2 class="new-day-title" id="nd-title">DAY 2</h2>
-      <div class="new-day-dist"   id="nd-added">+600,000 km today</div>
-      <div class="new-day-total"  id="nd-total">0.008 AU from Earth</div>
-      <div class="new-day-zone"   id="nd-zone">Cislunar Space</div>
+
+      <div class="nd-distance-row">
+        <span id="nd-added">+600,000 km</span>
+        <span class="nd-sep">·</span>
+        <span id="nd-total">0.008 AU from Earth</span>
+      </div>
+
+      <!-- Zone badge -->
+      <div class="nd-zone-badge">
+        <span id="nd-zone-icon">🌙</span>
+        <span id="nd-zone-name">Cislunar Space</span>
+      </div>
+
+      <!-- Milestone reached (shown only when near one) -->
+      <div class="nd-milestone" id="nd-milestone" style="display:none"></div>
+
+      <!-- Quote from the current zone -->
+      <blockquote class="nd-quote" id="nd-quote"></blockquote>
+
+      <!-- Fact from the current zone -->
+      <div class="nd-fact-box">
+        <span class="nd-fact-icon">💡</span>
+        <span id="nd-fact">Loading…</span>
+      </div>
+
       <button class="btn-primary" onclick="dismissNewDay()">CONTINUE MISSION →</button>
     </div>
   </div>
@@ -77,6 +102,15 @@
         <span id="hero-streak-num">1</span>
         <span class="streak-label"> day streak</span>
       </div>
+    </section>
+
+    <!-- ── SOLAR SYSTEM MAP ──────────────────────────────────────────── -->
+    <section class="solar-map-section">
+      <div class="solar-map-header">
+        <h2 class="section-title">Your Position in the Solar System</h2>
+        <span class="solar-map-note">Log scale · probe travels upper-right</span>
+      </div>
+      <canvas id="solar-map" class="solar-map-canvas" aria-label="Solar system map showing probe position"></canvas>
     </section>
 
     <!-- ── JOURNEY PROGRESS BAR ───────────────────────────────────────── -->
