@@ -85,32 +85,40 @@
       <button class="btn-share" onclick="shareJourney()">Share</button>
     </nav>
 
-    <!-- ── HERO ────────────────────────────────────────────────────────── -->
-    <section class="hero" id="hero">
-      <div class="probe-label">YOUR PROBE — DAY <span id="hero-day">1</span></div>
-      <div class="hero-distance">
-        <span id="hero-au">0.0040</span><span class="au-unit">AU</span>
-      </div>
-      <div class="hero-km" id="hero-km">598,391 km from Earth</div>
-      <div class="hero-zone-badge" id="hero-zone-badge">
-        <span id="hero-zone-icon">🛰️</span>
-        <span id="hero-zone-name">Low Earth Orbit</span>
-      </div>
-      <div class="hero-streak" id="hero-streak">
-        <span class="streak-icon">🔥</span>
-        <span id="hero-streak-num">1</span>
-        <span class="streak-label"> day streak</span>
-      </div>
-    </section>
+    <!-- ── MAP HERO (full-screen solar system view) ──────────────────── -->
+    <div class="map-hero" id="hero">
+      <canvas id="solar-map" aria-label="Solar system map showing probe position"></canvas>
 
-    <!-- ── SOLAR SYSTEM MAP ──────────────────────────────────────────── -->
-    <section class="solar-map-section">
-      <div class="solar-map-header">
-        <h2 class="section-title">Your Position in the Solar System</h2>
-        <span class="solar-map-note">Log scale · probe travels upper-right</span>
+      <!-- HUD top-left: day + streak -->
+      <div class="hud-tl">
+        <div class="probe-label">YOUR PROBE — DAY <span id="hero-day">1</span></div>
+        <div class="hero-streak" id="hero-streak">
+          <span class="streak-icon">🔥</span>
+          <span id="hero-streak-num">1</span>
+          <span class="streak-label"> day streak</span>
+        </div>
       </div>
-      <canvas id="solar-map" class="solar-map-canvas" aria-label="Solar system map showing probe position"></canvas>
-    </section>
+
+      <!-- HUD bottom-left: distance + zone -->
+      <div class="hud-bl">
+        <div class="hero-distance">
+          <span id="hero-au">0.0040</span><span class="au-unit">AU</span>
+        </div>
+        <div class="hero-km" id="hero-km">598,391 km from Earth</div>
+        <div class="hero-zone-badge" id="hero-zone-badge">
+          <span id="hero-zone-icon">🛰️</span>
+          <span id="hero-zone-name">Low Earth Orbit</span>
+        </div>
+      </div>
+
+      <!-- HUD bottom-right: scale note -->
+      <div class="hud-br">
+        <span class="map-scale-note">log scale · probe travels upper-right</span>
+      </div>
+
+      <!-- scroll hint -->
+      <div class="hud-scroll">↓ mission details</div>
+    </div>
 
     <!-- ── JOURNEY PROGRESS BAR ───────────────────────────────────────── -->
     <section class="progress-section">

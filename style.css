@@ -34,39 +34,86 @@ body {
   overflow-x: hidden;
 }
 
-/* ── SOLAR SYSTEM MAP ─────────────────────────────────────────────────────── */
+/* ── MAP HERO (full-screen solar system view + HUD) ───────────────────────── */
 
-.solar-map-section {
-  margin: 0.5rem 0 2rem;
+.map-hero {
+  position: relative;
+  height: 100vh;
+  min-height: 520px;
+  overflow: hidden;
+  /* break out of #app's max-width to fill the full viewport */
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.solar-map-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  gap: 1rem;
+/* Fade bottom edge into page */
+.map-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 140px;
+  background: linear-gradient(transparent, var(--bg-primary));
+  pointer-events: none;
+  z-index: 2;
 }
 
-.solar-map-note {
+#solar-map {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* transparent — twinkling stars canvas shows through */
+}
+
+/* HUD overlays */
+.hud-tl {
+  position: absolute;
+  top: 4.5rem;
+  left: clamp(1rem, 3vw, 2.5rem);
+  z-index: 3;
+}
+
+.hud-bl {
+  position: absolute;
+  bottom: 3.5rem;
+  left: clamp(1rem, 3vw, 2.5rem);
+  z-index: 3;
+}
+
+.hud-br {
+  position: absolute;
+  bottom: 1.4rem;
+  right: clamp(1rem, 3vw, 2.5rem);
+  z-index: 3;
+}
+
+.map-scale-note {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: var(--text-muted);
   letter-spacing: 0.06em;
+}
+
+.hud-scroll {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  z-index: 3;
   white-space: nowrap;
+  animation: scrollPulse 2.8s ease-in-out infinite;
 }
 
-.solar-map-canvas {
-  display: block;
-  width: 100%;
-  height: 380px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: radial-gradient(ellipse at center, #0d1829 0%, #050810 100%);
-}
-
-@media (max-width: 600px) {
-  .solar-map-canvas { height: 260px; }
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.35; transform: translateX(-50%) translateY(0); }
+  50%       { opacity: 0.75; transform: translateX(-50%) translateY(5px); }
 }
 
 /* ── STARS CANVAS ─────────────────────────────────────────────────────────── */
@@ -355,19 +402,24 @@ body {
   z-index: 1;
   max-width: 1080px;
   margin: 0 auto;
-  padding: 0 1.25rem 4rem;
+  padding: 0 0 4rem;
 }
 
 /* ── NAV ──────────────────────────────────────────────────────────────────── */
 
 /* Back to svenamberg.com */
 .site-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.1rem 0;
-  border-bottom: 1px solid var(--border);
+  padding: 1.1rem clamp(1rem, 3vw, 2.5rem);
   gap: 1rem;
+  background: linear-gradient(var(--bg-primary), transparent);
 }
 
 .home-link {
@@ -403,13 +455,7 @@ body {
 }
 .btn-share:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
 
-/* ── HERO ─────────────────────────────────────────────────────────────────── */
-
-.hero {
-  padding: 4rem 0 3rem;
-  text-align: center;
-  transition: --zone-clr 0.8s ease;
-}
+/* ── HERO HUD elements ────────────────────────────────────────────────────── */
 
 .probe-label {
   font-family: var(--font-mono);
@@ -422,15 +468,15 @@ body {
 
 .hero-distance {
   font-family: var(--font-heading);
-  font-size: clamp(3.5rem, 12vw, 7rem);
+  font-size: clamp(3rem, 10vw, 6rem);
   line-height: 1;
   color: var(--text-primary);
-  text-shadow: 0 0 60px rgba(74,158,255,0.15);
+  text-shadow: 0 0 40px rgba(74,158,255,0.4), 0 0 80px rgba(74,158,255,0.15);
 }
 
 .au-unit {
   font-family: var(--font-mono);
-  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-size: clamp(1rem, 2.5vw, 1.8rem);
   color: var(--zone-clr, var(--accent-blue));
   margin-left: 0.3rem;
   vertical-align: middle;
@@ -439,9 +485,9 @@ body {
 
 .hero-km {
   font-family: var(--font-mono);
-  font-size: clamp(0.78rem, 2vw, 0.95rem);
+  font-size: clamp(0.72rem, 1.8vw, 0.88rem);
   color: var(--text-secondary);
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
   letter-spacing: 0.05em;
 }
 
@@ -449,25 +495,38 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  margin-top: 1.25rem;
-  padding: 0.4rem 1.1rem;
+  margin-top: 0.85rem;
+  padding: 0.35rem 0.9rem;
   border: 1px solid var(--zone-clr, var(--accent-blue));
   border-radius: 50px;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   color: var(--zone-clr, var(--accent-blue));
-  background: rgba(74,158,255,0.06);
+  background: rgba(10,13,20,0.55);
+  backdrop-filter: blur(8px);
   transition: border-color 0.8s ease, color 0.8s ease;
 }
 
 .hero-streak {
-  margin-top: 0.85rem;
+  margin-top: 0.6rem;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   color: var(--warning);
   letter-spacing: 0.06em;
   transition: opacity 0.4s ease;
+}
+
+/* ── CONTENT SECTIONS (below the map hero) ────────────────────────────────── */
+
+.progress-section,
+.stats-section,
+.discovery-section,
+.zone-mission-section,
+.log-milestone-section,
+.site-footer {
+  padding-left: clamp(1rem, 3vw, 2.5rem);
+  padding-right: clamp(1rem, 3vw, 2.5rem);
 }
 
 /* ── PROGRESS BAR ─────────────────────────────────────────────────────────── */
@@ -1043,8 +1102,8 @@ body {
   .log-days                { gap: 0.3rem; }
   .log-day                 { width: 32px; padding: 0.35rem 0.15rem; }
 
-  .hero                    { padding: 2.5rem 0 2rem; }
-  .hero-distance           { font-size: clamp(3rem, 16vw, 5rem); }
+  .hero-distance           { font-size: clamp(2.5rem, 14vw, 4.5rem); }
+  .hud-bl                  { bottom: 3rem; }
 }
 
 @media (max-width: 480px) {
