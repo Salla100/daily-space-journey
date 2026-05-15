@@ -24,6 +24,7 @@
 }
 
 html { scroll-behavior: smooth; }
+[hidden] { display: none !important; }
 
 body {
   background: var(--bg-primary);
