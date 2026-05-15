@@ -1,6 +1,6 @@
 // milestones.js — Zone definitions and mission data for Daily Space Journey
 
-const DAILY_DISTANCE_AU = 0.004;  // ~600,000 km/day
+const DAILY_DISTANCE_AU = 39.5 / 365; // ~0.1082 AU/day — reaches Pluto in exactly 1 year
 const AU_TO_KM = 149597870.7;
 const MAX_SCALE_AU = 121.6;       // Heliopause — scale reference for progress bar
 

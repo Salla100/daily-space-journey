@@ -34,13 +34,17 @@ function processState(raw) {
     return { state, isFirstVisit: true, isNewDay: false };
   }
   const today = todayStr();
-  if (raw.lastVisit === today) return { state: raw, isFirstVisit: false, isNewDay: false };
-  raw.lastVisit = today;
-  raw.totalDays += 1;
+  let isNewDay = false;
+  if (raw.lastVisit !== today) {
+    raw.lastVisit = today;
+    raw.totalDays += 1;
+    if (!raw.visitLog.includes(today)) raw.visitLog.push(today);
+    isNewDay = true;
+  }
+  // Always recompute from the current constant so pacing changes apply immediately
   raw.distanceAU = raw.totalDays * DAILY_DISTANCE_AU;
-  if (!raw.visitLog.includes(today)) raw.visitLog.push(today);
   saveState(raw);
-  return { state: raw, isFirstVisit: false, isNewDay: true };
+  return { state: raw, isFirstVisit: false, isNewDay };
 }
 
 function calcStreak(visitLog) {
